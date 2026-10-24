@@ -1,0 +1,76 @@
+# .github/workflows/ci.yml
+# Конвейер для проекта "Конвертер единиц".
+
+name: Конвейер сборки конвертера единиц
+
+# Когда запускать
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # ----- ЭТАП 1: ПРОВЕРКА КОДА И ТЕСТЫ -----
+  test-and-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Получить код
+        uses: actions/checkout@v4
+
+      - name: Установить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Установить зависимости
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Линтер проверяет стиль и синтаксис обоих файлов
+      - name: Проверить стиль кода (flake8)
+        run: flake8 unit_converter.py test_unit_converter.py
+
+      # Запуск всех тестов конвертера
+      - name: Запустить тесты (pytest)
+        run: pytest test_unit_converter.py -v
+
+  # ----- ЭТАП 2: СБОРКА И УПАКОВКА -----
+  build-and-package:
+    needs: test-and-lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Получить код
+        uses: actions/checkout@v4
+
+      - name: Установить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Установить зависимости для сборки
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
+
+      - name: Собрать пакет
+        run: python -m build
+
+      - name: Сохранить артефакт сборки
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-converter-package
+          path: dist/
+
+  # ----- ЭТАП 3: УВЕДОМЛЕНИЕ О РЕЗУЛЬТАТЕ -----
+  notify:
+    if: always()
+    needs: [ test-and-lint, build-and-package ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Показать итоговый статус
+        run: |
+          echo "Конвейер завершён."
+          echo "Проверка кода и тесты: ${{ needs.test-and-lint.result }}"
+          echo "Сборка и упаковка:     ${{ needs.build-and-package.result }}"
