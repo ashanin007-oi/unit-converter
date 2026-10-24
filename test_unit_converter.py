@@ -57,4 +57,3 @@ def test_convert_unsupported():
     """Неподдерживаемая пара единиц — должна быть ошибка ValueError."""
     with pytest.raises(ValueError):
         convert(1, "kg", "km")  # килограммы в километры перевести нельзя
-        
