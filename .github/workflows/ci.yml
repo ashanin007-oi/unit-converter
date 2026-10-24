@@ -6,9 +6,9 @@ name: Конвейер сборки конвертера единиц
 # Когда запускать
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   # ----- ЭТАП 1: ПРОВЕРКА КОДА И ТЕСТЫ -----
