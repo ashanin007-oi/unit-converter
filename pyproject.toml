@@ -7,6 +7,7 @@ name = "unit-converter"
 version = "0.1.0"
 description = "Простой конвертер единиц измерения"
 authors = [
-    { name = "Ваше Имя", email = "ваша.почта@example.com" }
+    # ВАЖНО: email должен быть на английском!
+    { name = "Андрей", email = "ashanin007@gmail.com" }
 ]
 requires-python = ">=3.8"
